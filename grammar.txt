@@ -1,0 +1,48 @@
+Identifier, 		// name, _name, this_name
+
+// Grouping
+LeftParen,  		// (
+RightParen, 		// )
+LeftBrace,  		// [
+RightBrace, 		// ]
+LeftCurly,  		// {
+RightCurly, 		// ]
+
+// Literals
+Number,     		// 123, 1.23, 1_000
+String,     		// "something"
+True,       		// true
+False,      		// false
+
+// Binary Operators
+Minus,    			// -
+Plus,     			// +
+Divide,   			// /
+Multiply, 			// *
+Modulus,  			// %
+Exponent, 			// ^
+Range, 				// ..
+Greater,      		// >
+Less,         		// <
+GreaterEqual, 		// >=
+LessEqual,    		// <=
+Equal,        		// =
+NotEqual,     		// !=
+And,          		// &
+Or,           		// |
+Die,          		// d
+
+//Unary Operators
+Bang,     			// !
+KeepHighest,  		// kh
+KeepLowest,   		// kl
+
+// Keywords
+Seed,         		// seed; 123
+
+// Delimiters
+HiddenStartDelim, 	// [{
+HiddenEndDelim,		//}]
+StartDelim,       	// [[
+EndDelim,         	// ]], }]
+Semicolon,        	// ;

@@ -1,0 +1,18 @@
+What is C?
+A = [[a; 1]]
+B = [[b; 2]]
+C = ? [{c; 3}]
+A + B + C = [[total; a + b + c]]
+
+sum(a, b); a + b
+
+four; sum(2 4) + sum(2  2 ++ 2)
+
+
+Consider multi pass parsing
+
+parse cells
+parse expressions
+analyze
+compute
+inject
