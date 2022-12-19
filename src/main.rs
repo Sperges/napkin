@@ -30,7 +30,6 @@ fn main() -> Result<()> {
 	// let state = parse_cells(pairs);
 
 	println!("{:#?}", pairs);
-	// println!("{:#?}", cells);
 
     Ok(())
 }
