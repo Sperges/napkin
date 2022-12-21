@@ -1,0 +1,7 @@
+[[a; 1 + 2]]This file is for testing funct
+ions. [[hello; a b; a + b]]
+
+
+This file is for testing functions. [[hello; a b; a + b]]
+
+[[call; hello(2 + 2 3)]]

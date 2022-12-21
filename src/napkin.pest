@@ -4,9 +4,9 @@ text = { "" ~ (!possible_cell ~ ANY)+ ~ "" }
 
 possible_cell = { "[[" ~ (!"]]" ~ ANY)* ~ "]]" }
 
-cell = { "[[" ~ (hidden_cell | visible_cell) ~ "]]" }
+cell = _{ "[[" ~ (function_cell | visible_cell) ~ "]]" }
 
-hidden_cell = { cell_key ~ ";" ~ args ~ ";" ~ expr }
+function_cell = { cell_key ~ ";" ~ args ~ ";" ~ expr }
 
 visible_cell = { cell_key ~ ";" ~ expr }
 
@@ -48,4 +48,4 @@ number = @{ ASCII_DIGIT+ ~ ("." ~ ASCII_DIGIT+)? }
 
 ident = @{ (ASCII_ALPHA | "_") ~ (ASCII_ALPHANUMERIC | "_")* }
 
-WHITESPACE = _{ " " | "\t" | "\r" | "\n" }
+WHITESPACE = _{ " " | "\t" }

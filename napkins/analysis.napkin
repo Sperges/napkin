@@ -1,0 +1,17 @@
+valid
+[[a; 2]]
+[[b; a]]
+
+also valid
+[[c; a]]
+[[d; c]]
+[[e; d]]
+[[f; c]]
+
+not valid
+[[g; i]]
+[[h; g]]
+[[i; g]]
+
+also not valid
+[[j; nothing]]

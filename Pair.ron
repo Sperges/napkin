@@ -1,0 +1,57 @@
+Pair {
+    rule: func,
+    span: Span {
+        str: "hello(2 3)",
+        start: 134,
+        end: 144,
+    },
+    inner: [
+        Pair {
+            rule: ident,
+            span: Span {
+                str: "hello",
+                start: 134,
+                end: 139,
+            },
+            inner: [],
+        },
+        Pair {
+            rule: expr,
+            span: Span {
+                str: "2 ",
+                start: 140,
+                end: 142,
+            },
+            inner: [
+                Pair {
+                    rule: number,
+                    span: Span {
+                        str: "2",
+                        start: 140,
+                        end: 141,
+                    },
+                    inner: [],
+                },
+            ],
+        },
+        Pair {
+            rule: expr,
+            span: Span {
+                str: "3",
+                start: 142,
+                end: 143,
+            },
+            inner: [
+                Pair {
+                    rule: number,
+                    span: Span {
+                        str: "3",
+                        start: 142,
+                        end: 143,
+                    },
+                    inner: [],
+                },
+            ],
+        },
+    ],
+},

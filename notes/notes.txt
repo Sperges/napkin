@@ -1,2 +1,5 @@
 semantic routines / analyzer
 
+Ananylsis:
+All idents and fucntions must exist
+Cells must not have cyclical dependencies
