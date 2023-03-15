@@ -29,9 +29,9 @@ struct Napkin {
 }
 
 impl Napkin {
-    fn cells(&self) -> Vec<&Cell> {
-        return self.groups.iter().flat_map(|group| group.cell()).collect();
-    }
+    // fn cells(&self) -> Vec<&Cell> {
+    //     return self.groups.iter().flat_map(|group| group.cell()).collect();
+    // }
 
     fn functions(&self) -> Vec<&Cell> {
         return self.groups.iter().flat_map(|group| group.function()).collect();
@@ -441,7 +441,7 @@ fn evaluate(napkin: &Napkin) -> String {
     return strings.concat();
 }
 
-fn eval_expr(context: &mut Context, expr: &Expr) -> f64 {
+fn eval_expr<'a>(context: &mut Context<'a>, expr: &'a Expr) -> f64 {
     match expr {
         Expr::Ident(ident) => eval_ident(context, ident),
         Expr::Number(number) => number.clone(),
@@ -455,16 +455,28 @@ fn eval_ident(context: &mut Context, ident: &String) -> f64 {
     return eval_expr(context, &context.cells[ident]);
 }
 
-fn eval_func(context: &mut Context, ident: &String, args: &Vec<Box<Expr>>) -> f64 {
-    if let Some(cell) = context.cells.get(ident) {
+fn eval_func<'a>(context: &mut Context<'a>, ident: &String, arg_exprs: &'a Vec<Box<Expr>>) -> f64 {
+    let (arg_tags, expr) = &context.functions[ident];
 
-        todo!()
-    } else {
-        panic!("We fucked up with functions")
-    }
+    // let new_functions: HashMap<&String, &Expr> = arg_tags
+    //     .iter()
+    //     .flat_map(|&tag| arg_exprs.iter().map(move |expr| (tag, expr.as_ref())))
+    //     .collect();
+
+    let new_functions: HashMap<&String, &Expr> = arg_tags.iter()
+    .zip(arg_exprs.iter())
+    .map(|(tag, expr)| (*tag, expr.as_ref()))
+    .collect();
+    
+
+    context.cells.extend(new_functions);
+
+    println!("{:#?}", context);
+    
+    return eval_expr(context, expr);
 }
 
-fn eval_unary(context: &mut Context, op: &UnaryOp, expr: &Expr) -> f64 {
+fn eval_unary<'a>(context: &mut Context<'a>, op: &UnaryOp, expr: &'a Expr) -> f64 {
     let expr = eval_expr(context, expr);
     return match op {
         UnaryOp::Negative => -expr,
@@ -472,7 +484,7 @@ fn eval_unary(context: &mut Context, op: &UnaryOp, expr: &Expr) -> f64 {
     };
 }
 
-fn eval_binary(context: &mut Context, lhs: &Expr, op: &BinaryOp, rhs: &Expr) -> f64 {
+fn eval_binary<'a>(context: &mut Context<'a>, lhs: &'a Expr, op: &BinaryOp, rhs: &'a Expr) -> f64 {
     let lhs = eval_expr(context, lhs);
     let rhs = eval_expr(context, rhs);
     match op {

@@ -6,7 +6,7 @@ A + B + C = {{total; a + b + c}}
 
 {{d; a b; a + b}}
 
-{{e; d(1 2)}}
+E = {{e; d(1 2)}}
 
 sum(a, b); a + b
 
