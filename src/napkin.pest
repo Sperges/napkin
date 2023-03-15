@@ -1,0 +1,53 @@
+file = _{ SOI ~ (cell | text)* ~ EOI }
+
+text = { "" ~ (!possible_cell ~ ANY)+ ~ "" } 
+
+possible_cell = { "{{" ~ (!"}}" ~ ANY)* ~ "}}" }
+
+cell = _{ "{{" ~ (function_cell | visible_cell | hidden_cell) ~ "}}" }
+
+function_cell = { cell_key ~ ";" ~ args ~ ";" ~ expr }
+
+visible_cell = { cell_key ~ ";" ~ expr }
+
+hidden_cell = { "!" ~ cell_key ~ ";" ~ expr}
+
+cell_key = { ident }
+
+args = { (ident ~ ","?)* }
+
+expr = { term ~ (infix ~ term)* }
+
+infix = _{
+	  add 
+	| subtract 
+	| multiply
+	| divide 
+	| power 
+	| modulo 
+	}
+
+	add = { "+" } 
+	subtract = { "-" }
+	multiply = { "*" }
+	divide = { "/" }
+	power = { "^" }
+	modulo = { "%" }
+
+term = _{ prefix* ~ primary ~ postfix* }
+
+prefix = _{ negative }
+	negative = { "-" }
+
+postfix = _{ factorial }
+	factorial = { "!" }
+
+primary = _{ func | "(" ~ expr ~ ")" | number | ident  }
+
+func = { ident ~ "(" ~ expr* ~ ")" }
+
+number = @{ ASCII_DIGIT+ ~ ("." ~ ASCII_DIGIT+)? }
+
+ident = @{ (ASCII_ALPHA | "_") ~ (ASCII_ALPHANUMERIC | "_")* }
+
+WHITESPACE = _{ " " | "\t" }
