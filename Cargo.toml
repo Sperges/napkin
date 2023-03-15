@@ -14,5 +14,5 @@ lazy_static = "^1.4"
 anyhow = "1.0"
 thiserror = "1.0"
 
-# clap = { version = "^4.0", features = ["derive"] }
-# rustyline = "^10.0"
+clap = { version = "^4.0", features = ["derive"] }
+rustyline = "^10.0"

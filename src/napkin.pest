@@ -1,16 +1,15 @@
 file = _{ SOI ~ (cell | text)* ~ EOI }
 
-text = { "" ~ (!possible_cell ~ ANY)+ ~ "" } 
+text = { "" ~ (!cell ~ ANY)+ ~ "" } 
 
-possible_cell = { "{{" ~ (!"}}" ~ ANY)* ~ "}}" }
+cell = _{ (function_cell | visible_cell | hidden_cell) }
 
-cell = _{ "{{" ~ (function_cell | visible_cell | hidden_cell) ~ "}}" }
+// TODO: allow function cells to be declared in line
+function_cell = { "{{" ~ cell_key ~ ";" ~ args ~ ";" ~ expr ~ "}}" ~ ("\r\n" | "\n") }
 
-function_cell = { cell_key ~ ";" ~ args ~ ";" ~ expr }
+visible_cell = { "{{" ~ cell_key ~ ";" ~ expr ~ "}}" }
 
-visible_cell = { cell_key ~ ";" ~ expr }
-
-hidden_cell = { "!" ~ cell_key ~ ";" ~ expr}
+hidden_cell = { "{{" ~ "!" ~ cell_key ~ ";" ~ expr ~ "}}" }
 
 cell_key = { ident }
 
@@ -34,7 +33,9 @@ infix = _{
 	power = { "^" }
 	modulo = { "%" }
 
-term = _{ prefix* ~ primary ~ postfix* }
+// TODO: fix factorial
+// term = _{ prefix* ~ primary ~ postfix* }
+term = _{ prefix* ~ primary }
 
 prefix = _{ negative }
 	negative = { "-" }

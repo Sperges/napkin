@@ -1,15 +1,18 @@
 use std::{
     collections::{HashMap, HashSet},
-    fs,
+    fs, path::PathBuf,
 };
 
 use anyhow::{Error, Result};
 use pest::{
     iterators::{Pair, Pairs},
-    pratt_parser::PrattParser,
-    Parser,
+    pratt_parser::PrattParser, Parser,
 };
-use pest_derive::Parser;
+
+#[derive(clap::Parser, Debug)]
+struct Cli {
+    path: PathBuf,
+}
 
 #[derive(thiserror::Error, Debug)]
 enum NapkinError {
@@ -34,7 +37,11 @@ impl Napkin {
     // }
 
     fn functions(&self) -> Vec<&Cell> {
-        return self.groups.iter().flat_map(|group| group.function()).collect();
+        return self
+            .groups
+            .iter()
+            .flat_map(|group| group.function())
+            .collect();
     }
 }
 
@@ -56,7 +63,7 @@ impl Group {
         match self {
             Group::Text(_) => None,
             Group::Cell(cell) => cell.function(),
-        }   
+        }
     }
 }
 
@@ -82,13 +89,20 @@ impl Cell {
         return match self {
             Cell::Hidden { tag: _, expr: _ } => None,
             Cell::Visible { tag: _, expr: _ } => None,
-            Cell::Functional { tag: _, args: _, expr: _ } => Some(self),
-        }
+            Cell::Functional {
+                tag: _,
+                args: _,
+                expr: _,
+            } => Some(self),
+        };
     }
 
     fn tag(&self) -> &String {
         return match self {
-            Cell::Hidden { tag: ident, expr: _ } => ident,
+            Cell::Hidden {
+                tag: ident,
+                expr: _,
+            } => ident,
             Cell::Visible {
                 tag: ident,
                 expr: _,
@@ -110,7 +124,6 @@ impl Cell {
                 args: _,
                 expr,
             } => expr.idents(),
-            
         };
     }
 
@@ -213,7 +226,7 @@ impl PairsExt for Pairs<'_, Rule> {
     }
 }
 
-#[derive(Parser)]
+#[derive(pest_derive::Parser)]
 #[grammar = "napkin.pest"]
 pub struct NapkinParser {}
 
@@ -346,7 +359,7 @@ fn map_infix(lhs: Expr, op: Pair<Rule>, rhs: Expr) -> Expr {
             Rule::power => BinaryOp::Power,
             rule => unreachable!("Expr::parse expected infix operation, found {:?}", rule),
         },
-        rhs: Box::new(rhs),
+        rhs: Box::new(rhs)
     };
 }
 
@@ -416,7 +429,11 @@ fn evaluate(napkin: &Napkin) -> String {
         .flatten()
         .collect();
 
-    let functions = napkin.functions().iter().map(|cell| (cell.tag(), (cell.args().unwrap(), cell.expr().unwrap()))).collect();
+    let functions = napkin
+        .functions()
+        .iter()
+        .map(|cell| (cell.tag(), (cell.args().unwrap(), cell.expr().unwrap())))
+        .collect();
 
     let mut context: Context = Context { cells, functions };
 
@@ -458,21 +475,14 @@ fn eval_ident(context: &mut Context, ident: &String) -> f64 {
 fn eval_func<'a>(context: &mut Context<'a>, ident: &String, arg_exprs: &'a Vec<Box<Expr>>) -> f64 {
     let (arg_tags, expr) = &context.functions[ident];
 
-    // let new_functions: HashMap<&String, &Expr> = arg_tags
-    //     .iter()
-    //     .flat_map(|&tag| arg_exprs.iter().map(move |expr| (tag, expr.as_ref())))
-    //     .collect();
+    context.cells.extend(
+        arg_tags
+            .iter()
+            .zip(arg_exprs.iter())
+            .map(|(tag, expr)| (*tag, expr.as_ref()))
+            .collect::<HashMap<&String, &Expr>>(),
+    );
 
-    let new_functions: HashMap<&String, &Expr> = arg_tags.iter()
-    .zip(arg_exprs.iter())
-    .map(|(tag, expr)| (*tag, expr.as_ref()))
-    .collect();
-    
-
-    context.cells.extend(new_functions);
-
-    println!("{:#?}", context);
-    
     return eval_expr(context, expr);
 }
 
@@ -480,7 +490,7 @@ fn eval_unary<'a>(context: &mut Context<'a>, op: &UnaryOp, expr: &'a Expr) -> f6
     let expr = eval_expr(context, expr);
     return match op {
         UnaryOp::Negative => -expr,
-        UnaryOp::Factorial => ((1..(expr as usize) + 1).product::<usize>()) as f64,
+        UnaryOp::Factorial => 1.0 + expr,//((1..(expr as usize) + 1).product::<usize>()) as f64,
     };
 }
 
@@ -497,14 +507,17 @@ fn eval_binary<'a>(context: &mut Context<'a>, lhs: &'a Expr, op: &BinaryOp, rhs:
     }
 }
 
-fn main() -> Result<()> {
-    let file = fs::read_to_string("napkins/test01.napkin")?;
+fn run_cli() -> Result<()> {
+    let cli = <Cli as clap::Parser>::parse();
+    return run_file(&cli.path)
+}
+
+fn run_file(path: &PathBuf) -> Result<()> {
+    let file = fs::read_to_string(path)?;
     let pairs = NapkinParser::parse(Rule::file, &file)?;
     let napkin = parse_napkin(pairs)?;
-    // println!("{:#?}", napkin);
     let errors = analyze(&napkin);
     if errors.len() == 0 {
-        println!("{:#?}", napkin);
         println!("{}", evaluate(&napkin));
     } else {
         for error in errors {
@@ -512,4 +525,8 @@ fn main() -> Result<()> {
         }
     }
     Ok(())
+}
+
+fn main() -> Result<()> {
+    run_cli()
 }
