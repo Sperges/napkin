@@ -1,4 +1,4 @@
-What is C? 
+What is C?
 {{d; a b; a + b}}
 
 A = {{a; 1}}
@@ -11,12 +11,3 @@ E = {{e; d(1 2)}}
 sum(a, b); a + b
 
 four; sum(2 4) + sum(2  2 ++ 2)
-
-
-Consider multi pass parsing
-
-parse cells
-parse expressions
-analyze
-compute
-inject
